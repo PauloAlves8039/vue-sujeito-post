@@ -20,10 +20,10 @@
       <article class="post" v-for="post in posts" :key="post.id">
         <h1>{{ post.autor }}</h1>
         <p>
-          {{ post.content }}
+          {{post.content | postLength}}
         </p>
         <div class="action-post">
-          <button>
+          <button @click="likePost(post.id, post.likes)">
             {{ post.likes === 0 ? "Curtir" : post.likes + " Curtidas" }}
           </button>
           <button>Veja post completo</button>
@@ -105,15 +105,52 @@ export default {
           console.log("Error ao criar o post: " + error);
         });
     },
-  },
-  filters:{
-    postLength(valor){
-        if (valor.length < 200) { 
-            return valor 
-        }
-        return `${valor.substring(0, 200)}...`
+
+    async likePost(id, likes) {
+      const userId = this.user.uid;
+      const docId = `${userId}_${id}`;
+
+      const doc = await firebase
+        .firestore()
+        .collection("likes")
+        .doc(docId)
+        .get();
+
+      if (doc.exists) {
+        await firebase
+          .firestore()
+          .collection("posts")
+          .doc(id)
+          .update({
+            likes: likes - 1,
+          });
+
+        await firebase.firestore().collection("likes").doc(docId).delete();
+        return;
       }
-  }
+
+      await firebase.firestore().collection("likes").doc(docId).set({
+        postId: id,
+        userId: userId,
+      });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(id)
+        .update({
+          likes: likes + 1,
+        });
+    },
+  },
+  filters: {
+    postLength(valor) {
+      if (valor.length < 200) {
+        return valor;
+      }
+      return `${valor.substring(0, 200)}...`;
+    },
+  },
 };
 </script>
 
