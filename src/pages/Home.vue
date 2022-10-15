@@ -20,40 +20,38 @@
       <article class="post" v-for="post in posts" :key="post.id">
         <h1>{{ post.autor }}</h1>
         <p>
-          {{post.content | postLength}}
+          {{ post.content | postLength }}
         </p>
         <div class="action-post">
           <button @click="likePost(post.id, post.likes)">
             {{ post.likes === 0 ? "Curtir" : post.likes + " Curtidas" }}
           </button>
-          <button>Veja post completo</button>
+          <button @click="togglePostModal(post)">Veja post completo</button>
         </div>
       </article>
 
-      <article class="post">
-        <h1>Lucas Oliveira</h1>
-        <p>Olá este é meu primeiro post aqui na plataforma sujeitoPost :)</p>
-
-        <div class="action-post">
-          <button>20 curtidas</button>
-          <button>Veja post completo</button>
-        </div>
-      </article>
+      <Modal v-if="showPostModal" :post="fullPost" @close="togglePostModal()"></Modal>      
     </div>
   </div>
 </template>
 
 <script>
 import firebase from "../services/firebaseConnection";
+import Modal from '../components/Modal';
 
 export default {
   name: "Home",
+  components:{
+    Modal
+  },
   data() {
     return {
       input: "",
       user: {},
       loading: true,
       posts: [],
+      showPostModal: false,
+      fullPost: {},
     };
   },
   async created() {
@@ -141,6 +139,16 @@ export default {
         .update({
           likes: likes + 1,
         });
+    },
+
+    togglePostModal(post) {
+      this.showPostModal = !this.showPostModal;
+
+      if (this.showPostModal) {
+        this.fullPost = post;
+      } else {
+        this.fullPost = {};
+      }
     },
   },
   filters: {
