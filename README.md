@@ -22,6 +22,7 @@ Repositório de uma aplicação web para fins acadêmicos com propósito de simu
 - [Vue CLI v5.0.8](https://cli.vuejs.org/) 
 - [Vue.js v2.6.14](https://vuejs.org/)
 - [Vue Router v3.5.1](https://router.vuejs.org/guide/)
+- [Firebase v8.10.0](https://firebase.google.com/)
 - [Node.js v16.17.0](https://nodejs.org/en/)
 
 ## Author
